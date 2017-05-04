@@ -92,9 +92,14 @@ app.get('/:encoded(\\w+)',function(req, res){
 	});
 })
 
-app.get(/new\/((?:https?:\/\/)?(?:www\.)?\w+?\.\w+(?:.+)?)/, function(req, res){ 
+app.get('new/:url', function(req, res){ 
+	var patt = /((?:https?:\/\/)?(?:www\.)?\w+?\.\w+(?:.+)?)/
 	var longUrl = req.params[0];
 	var shortUrl = '';
+
+	if(!patt.test(req.params.url)){
+		res.send({'original_url': long_url, 'error': 'Url is not valid'})
+	}
 
 	// check if url already exists in database
 	Url.findOne({long_url: longUrl}, function (err, doc){
@@ -118,9 +123,7 @@ app.get(/new\/((?:https?:\/\/)?(?:www\.)?\w+?\.\w+(?:.+)?)/, function(req, res){
 		 			shortUrl = config.webhost + encode(newUrl._id)		
 		 			res.send({'original_url': longUrl, 'short_url': shortUrl})
 		 		}
-
 		 	})
-		 	
 		}
 	});
 })

@@ -27,6 +27,7 @@ var urlSchema = new Schema({
 // every time before an entry is saved to the urls collection.
 urlSchema.pre('save', function(next){
   var doc = this;
+  console.log(doc)
   // find the url_count and increment it by 1
   counter.findByIdAndUpdate({_id: 'url_count'}, {$inc: {seq: 1} }, function(error, counter) {
       if (error)
@@ -92,15 +93,15 @@ app.get('/:encoded(\\w+)',function(req, res){
 	});
 })
 
-app.get('new/:url', function(req, res){ 
+app.get('/new/:url', function(req, res){ 
 	var patt = /((?:https?:\/\/)?(?:www\.)?\w+?\.\w+(?:.+)?)/
-	var longUrl = req.params[0];
+	var longUrl = req.params.url;
 	var shortUrl = '';
 
 	if(!patt.test(req.params.url)){
-		res.send({'original_url': long_url, 'error': 'Url is not valid'})
+		res.send({'original_url': longUrl, 'error': 'Url is not valid'})
 	}
-
+	console.log(req.params.url)
 	// check if url already exists in database
 	Url.findOne({long_url: longUrl}, function (err, doc){
 		if (doc){

@@ -1,0 +1,30 @@
+{
+  "name": "url-shortener",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "dependencies": {
+    "express": "^4.15.2",
+    "mongodb": "^2.2.26",
+    "mongoose": "^4.9.7"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ThomasLeonardo/url-shortener.git"
+  },
+  "keywords": [
+    "node.js",
+    "mongodb"
+  ],
+  "author": "Thomas Leonardo",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ThomasLeonardo/url-shortener/issues"
+  },
+  "homepage": "https://github.com/ThomasLeonardo/url-shortener#readme"
+}

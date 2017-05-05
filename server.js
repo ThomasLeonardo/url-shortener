@@ -129,7 +129,8 @@ app.get('/new/:url', function(req, res){
 	});
 })
 
+var port = process.env.port || 8000
 
-app.listen(8080, function(){
-	console.log('Listening on port 8080')
+app.listen(port, function(){
+	console.log('Listening on port ' + port)
 })

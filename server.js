@@ -34,7 +34,7 @@ urlSchema.pre('save', function(next){
       // set the _id of the urls collection to the incremented value of the counter
       doc._id = counter.seq;
       doc.created_at = new Date();
-      if(!doc.long_url.startsWith("http://")){
+      if(!/^http(s)?:\/\//.test(doc.long_url)){
       		doc.long_url = "http://" + doc.long_url
       }
       next();
@@ -90,39 +90,48 @@ app.get('/:encoded(\\w+)',function(req, res){
 	});
 })
 
-app.get('/new/:url', function(req, res){ 
-	var patt = /((?:https?:\/\/)?(?:www\.)?\w+?\.\w+(?:.+)?)/
-	var longUrl = req.params.url;
+app.get('/new/:url*', function(req, res){
+	var longUrl = ''
+	if(req.param(0)){
+		longUrl = req.params.url + req.param(0)
+	}
+	else{
+		longUrl = req.params.url;	
+	}
+	//var longUrl = ''
+	var patt = /((http(s)?:\/\/)?(www\.)?\w+\.\w+)/
 	var shortUrl = '';
-
-	if(!patt.test(req.params.url)){
+	if(!patt.test(longUrl)){
 		res.send({'original_url': longUrl, 'error': 'Url is not valid'})
 	}
-	// check if url already exists in database
-	Url.findOne({long_url: longUrl}, function (err, doc){
-		if (doc){
-		 	// URL has already been shortened
-		 	shortUrl = config.webhost + encode(doc._id);
-		 	res.send({'original_url': longUrl, 'short_url': shortUrl})
+	else{
+		// check if url already exists in database
+		Url.findOne({long_url: longUrl}, function (err, doc){
+			if (doc){
+			 	// URL has already been shortened
+			 	shortUrl = config.webhost + encode(doc._id);
+			 	res.send({'original_url': longUrl, 'short_url': shortUrl})
 
-		} else {
-			// The long URL was not found in the long_url field in our urls
-		 	// collection, so we need to create a new entry
-		 	var newUrl = Url({
-		 		long_url: longUrl
-		 	})
+			} else {
+				// The long URL was not found in the long_url field in our urls
+			 	// collection, so we need to create a new entry
+			 	var newUrl = Url({
+			 		long_url: longUrl
+			 	})
 
-		 	newUrl.save(function(err){
-		 		if(err){
-		 			console.log(err)
-		 		}
-		 		else{
-		 			shortUrl = config.webhost + encode(newUrl._id)		
-		 			res.send({'original_url': longUrl, 'short_url': shortUrl})
-		 		}
-		 	})
-		}
-	});
+			 	newUrl.save(function(err){
+			 		if(err){
+			 			console.log(err)
+			 		}
+			 		else{
+			 			shortUrl = config.webhost + encode(newUrl._id)		
+			 			res.send({'original_url': longUrl, 'short_url': shortUrl})
+			 		}
+			 	})
+			}
+		});	
+	}
+	
 })
 
 var port = process.env.PORT || 8000
